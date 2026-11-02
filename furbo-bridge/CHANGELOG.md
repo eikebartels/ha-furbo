@@ -3,6 +3,15 @@
 Home Assistant shows this file when an update is available, so every version
 that ships to users gets an entry here.
 
+## 1.3.7
+
+- Update aiohttp to 3.14.5 and cryptography to 50.0.2; regenerate the
+  hash-locked runtime dependencies for the image's Python 3.12 runtime
+  and use the same direct dependency versions in bridge tests.
+- Upgrade the pinned base image's OpenSSL runtime, CLI and legacy provider
+  packages during the build to pick up Debian's available security fixes.
+- Keep the existing HIGH/CRITICAL vulnerability gate enabled.
+
 ## 1.3.6
 
 - **A failed audio check no longer costs you sound until the next restart.**
