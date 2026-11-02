@@ -43,7 +43,10 @@ ARG GO2RTC_SHA256_ARM64="d13d4d692833d9606ac0d0e25675bba58e804f3f401e4f70761c867
 #   libsqlite3-0  CVE-2026-11822, CVE-2026-11824
 #   perl-base     CVE-2026-13221, CVE-2026-42496, CVE-2026-42497, CVE-2026-8376,
 #                 CVE-2026-48962, CVE-2026-57432, CVE-2026-57433
-ARG SECURITY_UPGRADES="gzip libpcre2-8-0 libsqlite3-0 perl-base"
+# OpenSSL packages: the 2026-10-28 CI scan found CVE-2026-84782;
+# Debian provides the fix in 3.5.7-1~deb13u3 or later. Upgrade the runtime,
+# CLI and legacy provider together so the pinned base does not retain it.
+ARG SECURITY_UPGRADES="gzip libpcre2-8-0 libsqlite3-0 perl-base libssl3t64 openssl openssl-provider-legacy"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends --only-upgrade $SECURITY_UPGRADES \
@@ -79,7 +82,8 @@ RUN set -eux; \
 # Install the runtime deps from a fully hash-locked file (all transitive
 # packages pinned with SHA-256), so a compromised index cannot substitute a
 # different wheel. Regenerate with:
-#   uv pip compile furbo-bridge/requirements.txt --generate-hashes --universal \
+#   uv pip compile furbo-bridge/requirements.txt --python-version 3.12 \
+#     --generate-hashes --universal \
 #     -o furbo-bridge/requirements.lock
 COPY requirements.lock /app/requirements.lock
 RUN pip install --no-cache-dir --require-hashes -r /app/requirements.lock
